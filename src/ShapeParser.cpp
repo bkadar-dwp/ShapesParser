@@ -43,11 +43,11 @@ namespace ShapeAST
 	using Variant = boost::variant<Circle, Rectangle, Triangle>;
 } // namespace ShapeAST
 
-struct Factory : boost::static_visitor<IShapeParser::AShape>
+struct Factory : boost::static_visitor<Shape*> // boost::static_visitor<IShapeParser::AShape> doesn't work :-/
 {
-	IShapeParser::AShape operator()(ShapeAST::Circle const &c) const { return std::make_unique<Circle>(c.r); }
-	IShapeParser::AShape operator()(ShapeAST::Rectangle const &r) const { return std::make_unique<Rectangle>(r.a, r.b); }
-	IShapeParser::AShape operator()(ShapeAST::Triangle const &t) const { return std::make_unique<Triangle>(t.a, t.b, t.c); }
+	Shape* operator()(ShapeAST::Circle const &c) const { return new Circle(c.r); }
+	Shape* operator()(ShapeAST::Rectangle const &r) const { return new Rectangle(r.a, r.b); }
+	Shape* operator()(ShapeAST::Triangle const &t) const { return new Triangle(t.a, t.b, t.c); }
 };
 
 } //namespace unnamed
@@ -82,6 +82,6 @@ auto ShapeParser::parseOneShape(std::string const &str) -> AShape
 	ShapeAST::Variant ast;
 	namespace ascii = boost::spirit::x3::ascii;
 	if( x3::phrase_parse(pos, last, ShapeGrammar::shapeExpression, ascii::space, ast) && pos == last )
-		return boost::apply_visitor(Factory(), ast);
+		return AShape{boost::apply_visitor(Factory(), ast)};
 	throw std::runtime_error("invalid shape");
 }
