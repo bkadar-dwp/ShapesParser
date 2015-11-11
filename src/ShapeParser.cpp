@@ -1,7 +1,12 @@
 #include "ShapeParser.h"
 #include "Shapes.h"
 
+#pragma warning(push)
+#pragma warning(disable: 4100) //unreferenced formal parameter
+#pragma warning(disable: 4127) //conditional expression is constant
+#pragma warning(disable: 4459) //declaration of 'attr' hides global declaration
 #include <boost/spirit/home/x3.hpp>
+#pragma warning(pop)
 #include <boost/fusion/include/adapt_struct.hpp>
 
 std::unique_ptr<IShapeParser> IShapeParser::createParser()
